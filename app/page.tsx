@@ -1,7 +1,10 @@
 import { Suspense } from "react";
 import HeroSlider from "@/components/HeroSlider";
+import HeroSection from "@/components/HeroSection";
+import FeaturesSection from "@/components/FeaturesSection";
 import ProductsContent from "@/components/home/ProductsContent";
 import FAQAccordion from "@/components/FAQAccordion";
+
 
 async function getSliders() {
   try {
@@ -35,6 +38,8 @@ export default async function ProductsPage() {
   return (
     <>
       <HeroSlider initialSliders={heroSliders} position="top" />
+      <HeroSection />
+      <FeaturesSection />
       <Suspense fallback={null}>
         <ProductsContent />
       </Suspense>

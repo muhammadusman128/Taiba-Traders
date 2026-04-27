@@ -14,6 +14,8 @@ const defaultTheme = {
   backgroundColor: "#ffffff",
   footerBgColor: "#ffffff",
   footerTextColor: "#374151",
+  navbarBgColor: "#ffffff",
+  navbarTextColor: "#000000",
 };
 
 const darkThemePreset = {
@@ -25,6 +27,8 @@ const darkThemePreset = {
   backgroundColor: "#000000",
   footerBgColor: "#111827", // gray-900
   footerTextColor: "#9ca3af", // gray-400
+  navbarBgColor: "#000000",
+  navbarTextColor: "#ffffff",
 };
 
 const earthyPreset = {
@@ -36,6 +40,8 @@ const earthyPreset = {
   backgroundColor: "#faf5ff", // Light purple bg
   footerBgColor: "#1e1b4b", // Extra deep purple for footer
   footerTextColor: "#e5e7eb",
+  navbarBgColor: "#faf5ff",
+  navbarTextColor: "#1e1b4b",
 };
 
 export default function ThemeSettingsPage() {
@@ -300,6 +306,60 @@ export default function ThemeSettingsPage() {
             </div>
             <p className="text-xs text-gray-400">
               Color behind the whole site.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold tracking-wide text-gray-700">
+              Navbar Background
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={formData.navbarBgColor}
+                onChange={(e) =>
+                  setFormData({ ...formData, navbarBgColor: e.target.value })
+                }
+                className="w-12 h-12 p-1 bg-white border border-gray-200 rounded cursor-pointer"
+              />
+              <input
+                type="text"
+                value={formData.navbarBgColor}
+                onChange={(e) =>
+                  setFormData({ ...formData, navbarBgColor: e.target.value })
+                }
+                className="border border-gray-300 w-full rounded p-2 text-sm uppercase font-mono"
+              />
+            </div>
+            <p className="text-xs text-gray-400">
+              Background color for the top navigation bar.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold tracking-wide text-gray-700">
+              Navbar Text Color
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={formData.navbarTextColor}
+                onChange={(e) =>
+                  setFormData({ ...formData, navbarTextColor: e.target.value })
+                }
+                className="w-12 h-12 p-1 bg-white border border-gray-200 rounded cursor-pointer"
+              />
+              <input
+                type="text"
+                value={formData.navbarTextColor}
+                onChange={(e) =>
+                  setFormData({ ...formData, navbarTextColor: e.target.value })
+                }
+                className="border border-gray-300 w-full rounded p-2 text-sm uppercase font-mono"
+              />
+            </div>
+            <p className="text-xs text-gray-400">
+              Text and link colors for the top navigation bar.
             </p>
           </div>
 

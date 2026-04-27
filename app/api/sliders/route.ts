@@ -4,6 +4,8 @@ import Slider from "@/models/Slider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 // GET all sliders
 export async function GET(req: NextRequest) {
   try {
@@ -99,6 +101,8 @@ export async function POST(req: NextRequest) {
     const slider = await Slider.create({
       title: data.title,
       image: data.image,
+      backgroundColor: data.backgroundColor,
+      textColor: data.textColor,
       buttonText: data.buttonText,
       buttonLink: data.buttonLink,
       position: data.position || "top",

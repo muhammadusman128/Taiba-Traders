@@ -11,6 +11,8 @@ interface Slider {
   title: string;
   image: string;
   position: string;
+  backgroundColor: string;
+  textColor: string;
   buttonText: string;
   buttonLink: string;
   isActive: boolean;
@@ -26,6 +28,8 @@ export default function AdminSlidersPage() {
     title: "",
     image: "",
     position: "top",
+    backgroundColor: "transparent",
+    textColor: "#000000",
     buttonText: "",
     buttonLink: "",
     isActive: true,
@@ -91,8 +95,10 @@ export default function AdminSlidersPage() {
       title: slider.title,
       image: slider.image,
       position: slider.position || "top",
-      buttonText: "",
-      buttonLink: "",
+      backgroundColor: slider.backgroundColor || "transparent",
+      textColor: slider.textColor || "#000000",
+      buttonText: slider.buttonText || "",
+      buttonLink: slider.buttonLink || "",
       isActive: slider.isActive,
     });
     setShowModal(true);
@@ -103,6 +109,8 @@ export default function AdminSlidersPage() {
       title: "",
       image: "",
       position: "top",
+      backgroundColor: "transparent",
+      textColor: "#000000",
       buttonText: "",
       buttonLink: "",
       isActive: true,
@@ -334,6 +342,107 @@ export default function AdminSlidersPage() {
                   }
                   required
                   placeholder="E.g., Summer Collection 2026"
+                  className="w-full bg-transparent border-0 border-b border-gray-200 py-3 text-sm focus:ring-0 focus:border-black transition-colors px-0 placeholder:text-gray-300 font-light"
+                />
+              </div>
+
+              {/* Layout for Colors and Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-semibold text-gray-900 uppercase tracking-widest">
+                    Background Color
+                  </label>
+                  <div className="flex items-center border border-gray-200 px-3 py-2 rounded-sm bg-gray-50 focus-within:border-black focus-within:bg-white transition-colors">
+                    <input
+                      type="color"
+                      value={
+                        formData.backgroundColor === "transparent"
+                          ? "#ffffff"
+                          : formData.backgroundColor
+                      }
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          backgroundColor: e.target.value,
+                        })
+                      }
+                      className="w-6 h-6 border-0 p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={formData.backgroundColor}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          backgroundColor: e.target.value,
+                        })
+                      }
+                      placeholder="e.g., #000000 or transparent"
+                      className="flex-1 bg-transparent border-0 px-3 text-sm focus:ring-0 text-gray-900"
+                    />
+                  </div>
+                  <p className="text-[9px] text-gray-400 mt-1 uppercase tracking-widest">
+                    Set a hex color or "transparent".
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-semibold text-gray-900 uppercase tracking-widest">
+                    Text / Title Color
+                  </label>
+                  <div className="flex items-center border border-gray-200 px-3 py-2 rounded-sm bg-gray-50 focus-within:border-black focus-within:bg-white transition-colors">
+                    <input
+                      type="color"
+                      value={formData.textColor || "#000000"}
+                      onChange={(e) =>
+                        setFormData({ ...formData, textColor: e.target.value })
+                      }
+                      className="w-6 h-6 border-0 p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={formData.textColor}
+                      onChange={(e) =>
+                        setFormData({ ...formData, textColor: e.target.value })
+                      }
+                      placeholder="e.g., #000000"
+                      className="flex-1 bg-transparent border-0 px-3 text-sm focus:ring-0 text-gray-900"
+                    />
+                  </div>
+                  <p className="text-[9px] text-gray-400 mt-1 uppercase tracking-widest">
+                    Title heading color.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-semibold text-gray-900 uppercase tracking-widest">
+                    Button Text
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.buttonText}
+                    onChange={(e) =>
+                      setFormData({ ...formData, buttonText: e.target.value })
+                    }
+                    placeholder="E.g., Shop Now"
+                    className="w-full bg-transparent border-0 border-b border-gray-200 py-3 text-sm focus:ring-0 focus:border-black transition-colors px-0 placeholder:text-gray-300 font-light"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-semibold text-gray-900 uppercase tracking-widest">
+                  Button Link
+                </label>
+                <input
+                  type="text"
+                  value={formData.buttonLink}
+                  onChange={(e) =>
+                    setFormData({ ...formData, buttonLink: e.target.value })
+                  }
+                  placeholder="E.g., /products"
                   className="w-full bg-transparent border-0 border-b border-gray-200 py-3 text-sm focus:ring-0 focus:border-black transition-colors px-0 placeholder:text-gray-300 font-light"
                 />
               </div>

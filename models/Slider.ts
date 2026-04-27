@@ -5,6 +5,8 @@ export interface ISlider extends Document {
   image: string;
   buttonText?: string;
   buttonLink?: string;
+  backgroundColor?: string;
+  textColor?: string;
   position: string;
   isActive: boolean;
   order: number;
@@ -30,6 +32,14 @@ const SliderSchema: Schema = new Schema(
     buttonLink: {
       type: String,
       default: "/products",
+    },
+    backgroundColor: {
+      type: String,
+      default: "transparent",
+    },
+    textColor: {
+      type: String,
+      default: "#000000",
     },
     position: {
       type: String,

@@ -38,6 +38,16 @@ const menuItems = [
     href: "/admin/sliders",
   },
   {
+    icons: <FiImage size={26} />,
+    label: "Hero Section",
+    href: "/admin/hero",
+  },
+  {
+    icons: <FiGrid size={26} />,
+    label: "Features Section",
+    href: "/admin/features",
+  },
+  {
     icons: <FiShoppingBag size={26} />,
     label: "Products",
     href: "/admin/products",

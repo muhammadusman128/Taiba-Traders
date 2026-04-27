@@ -12,7 +12,10 @@ import {
   FiSearch,
   FiLogOut,
   FiPackage,
+  FiPhone,
+  FiMail,
 } from "react-icons/fi";
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import { IoPersonOutline } from "react-icons/io5";
 
 import { useCartStore } from "@/store/cartStore";
@@ -30,8 +33,10 @@ export default function Navbar() {
   const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [siteLogo, setSiteLogo] = useState("/logomain.png");
+  const [footerData, setFooterData] = useState<any>(null);
   const totalItems = useCartStore((state) => state.getTotalItems());
   const router = useRouter();
   const pathname = usePathname();
@@ -43,6 +48,10 @@ export default function Navbar() {
     setIsMounted(true);
     fetchCategories();
     fetchSiteLogo();
+    fetchFooterData();
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const fetchCategories = async () => {
@@ -70,10 +79,16 @@ export default function Navbar() {
       console.error("Error fetching site logo:", error);
     }
   };
+  const fetchFooterData = async () => {
+    try {
+      const { data } = await axios.get("/api/settings/footer");
+      setFooterData(data);
+    } catch (error) {
+      console.error("Error fetching footer data:", error);
+    }
+  };
 
   if (isAdminPage || isSearchPage || isAuthPage) return null;
-
-
 
   const flatCategories = categories
     .filter((c) => c.showInNav !== false)
@@ -81,11 +96,26 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="sticky md:relative top-0 z-[9991] bg-white/70 backdrop-blur-xl border-b border-white/40 shadow-[0_4px_30px_rgba(0,0,0,0.03)] text-gray-900 transition-all duration-300">
-        <NavbarHeadSliderLine />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center min-h-[5rem] md:min-h-[6rem] py-4 relative">
-            
+      {/* Banner stays full-width at top */}
+      <NavbarHeadSliderLine />
+
+      {/* Floating Pill Navbar */}
+      <div className="sticky top-3 z-[9991] w-full px-4 sm:px-8 lg:px-12 pointer-events-none">
+        <nav
+          className={`pointer-events-auto mx-auto rounded-2xl backdrop-blur-xl border transition-all duration-300 ${
+            scrolled
+              ? "border-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.18)]"
+              : "border-transparent shadow-none"
+          }`}
+          style={{
+            backgroundColor: scrolled
+              ? "rgba(255,255,255,0.15)"
+              : "transparent",
+            color: "var(--navbar-text, #111827)",
+          }}
+        >
+          <div className="w-full px-6 sm:px-10">
+            <div className="flex justify-between items-center min-h-[4rem] py-2 relative">
             {/* Left Section: Mobile Menu & Logo / Desktop Categories */}
             <div className="flex flex-1 justify-start items-center gap-2 md:gap-0">
               {/* Mobile Menu Button */}
@@ -120,26 +150,26 @@ export default function Navbar() {
                       <Link
                         key={cat._id}
                         href={`/products?category=${cat._id}`}
-                        className="group relative text-[11px] md:text-[12px] uppercase font-medium text-gray-500 hover:text-black tracking-widest whitespace-nowrap transition-colors duration-300"
+                        className="group relative text-[11px] md:text-[12px] uppercase font-medium text-[var(--navbar-text)] hover:opacity-80 tracking-widest whitespace-nowrap transition-colors duration-300"
                       >
                         {cat.name}
-                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-black transition-all duration-300 group-hover:w-full"></span>
+                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[var(--navbar-text)] transition-all duration-300 group-hover:w-full"></span>
                       </Link>
                     ))}
                     <div className="flex items-center gap-5 ml-2 border-l border-gray-200/60 pl-6">
                       <Link
                         href="/about"
-                        className="group relative text-[11px] md:text-[12px] uppercase font-medium text-gray-500 hover:text-black tracking-widest whitespace-nowrap transition-colors duration-300"
+                        className="group relative text-[11px] md:text-[12px] uppercase font-medium text-[var(--navbar-text)] hover:opacity-80 tracking-widest whitespace-nowrap transition-colors duration-300"
                       >
                         About Us
-                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-black transition-all duration-300 group-hover:w-full"></span>
+                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[var(--navbar-text)] transition-all duration-300 group-hover:w-full"></span>
                       </Link>
                       <Link
                         href="/contact"
-                        className="group relative text-[11px] md:text-[12px] uppercase font-medium text-gray-500 hover:text-black tracking-widest whitespace-nowrap transition-colors duration-300"
+                        className="group relative text-[11px] md:text-[12px] uppercase font-medium text-[var(--navbar-text)] hover:opacity-80 tracking-widest whitespace-nowrap transition-colors duration-300"
                       >
                         Contact Us
-                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-black transition-all duration-300 group-hover:w-full"></span>
+                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[var(--navbar-text)] transition-all duration-300 group-hover:w-full"></span>
                       </Link>
                     </div>
                   </>
@@ -147,8 +177,52 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Right Section: Icons (Search, Cart, Profile, Mobile Menu) */}
-            <div className="flex flex-1 justify-end items-center space-x-2 md:space-x-5">
+            {/* Right Section: Socials, Contact, Icons (Search, Cart, Profile, Mobile Menu) */}
+            <div className="flex flex-1 justify-end items-center space-x-1 md:space-x-4">
+              {/* Desktop Socials & Contact */}
+              <div className="hidden lg:flex items-center border-r border-gray-200/60 pr-4 mr-1 space-x-3">
+                {footerData?.contact?.phone && (
+                  <a
+                    href={`tel:${footerData.contact.phone}`}
+                    className="flex items-center gap-1.5 text-[11px] font-medium text-gray-500 hover:text-black transition-colors"
+                    title={footerData.contact.phone}
+                  >
+                    <FiPhone size={13} />
+                    <span className="hidden xl:inline">{footerData.contact.phone}</span>
+                  </a>
+                )}
+                {footerData?.contact?.email && (
+                  <a
+                    href={`mailto:${footerData.contact.email}`}
+                    className="flex items-center gap-1.5 text-[11px] font-medium text-gray-500 hover:text-black transition-colors"
+                    title={footerData.contact.email}
+                  >
+                    <FiMail size={13} />
+                  </a>
+                )}
+                <div className="h-3 w-px bg-gray-200 mx-1"></div>
+                {footerData?.socials?.facebook && (
+                  <a
+                    href={footerData.socials.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-[#1877F2] transition-colors"
+                  >
+                    <FaFacebookF size={14} />
+                  </a>
+                )}
+                {footerData?.socials?.instagram && (
+                  <a
+                    href={footerData.socials.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-[#E4405F] transition-colors"
+                  >
+                    <FaInstagram size={15} />
+                  </a>
+                )}
+              </div>
+
               <button
                 onClick={() => router.push("/search")}
                 className="p-2 text-gray-600 hover:text-black hover:bg-gray-100/80 rounded-full transition-all duration-300 cursor-pointer"
@@ -261,11 +335,11 @@ export default function Navbar() {
                   </Link>
                 )}
               </div>
-
+            </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
 
       {/* Mobile Menu Drawer */}
       {/* Backdrop */}
@@ -278,8 +352,9 @@ export default function Navbar() {
 
       {/* Slide-in Drawer */}
       <div
-        className={`fixed top-0 left-0 h-full w-[80vw] max-w-sm bg-white shadow-2xl z-999999 transform transition-transform duration-300 ease-in-out flex flex-col md:hidden ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed top-0 left-0 h-full w-[80vw] max-w-sm bg-white shadow-2xl z-999999 transform transition-transform duration-300 ease-in-out flex flex-col md:hidden ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           {session ? (

@@ -26,6 +26,7 @@ interface SliderItem {
   buttonText: string;
   buttonLink: string;
   backgroundColor?: string;
+  textColor?: string;
 }
 
 interface HeroSliderProps {
@@ -101,18 +102,8 @@ export default function HeroSlider({
         centeredSlides={false}
       >
         {sliders.map((slider, index) => (
-          <SwiperSlide
-            key={slider._id}
-            className="transition-colors duration-500 bg-transparent"
-          >
-            <div className="w-full h-full relative flex items-center justify-center">
-              {slider.buttonLink && (
-                <Link
-                  href={slider.buttonLink}
-                  className="absolute inset-0 z-10 cursor-pointer"
-                  aria-label={slider.title || "Slide link"}
-                />
-              )}
+          <SwiperSlide key={slider._id} className="bg-transparent">
+            <div className="w-full h-full relative block">
               <Image
                 src={slider.image}
                 alt={slider.title || "Hero Image"}
@@ -123,6 +114,15 @@ export default function HeroSlider({
                 loading={index === 0 ? "eager" : "lazy"}
                 priority={index === 0}
               />
+
+              {/* Optional whole slide link fallback */}
+              {slider.buttonLink && (
+                <Link
+                  href={slider.buttonLink}
+                  className="absolute inset-0 z-10 cursor-pointer"
+                  aria-label={slider.title || "Slide link"}
+                />
+              )}
             </div>
           </SwiperSlide>
         ))}

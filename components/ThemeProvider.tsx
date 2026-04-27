@@ -33,6 +33,11 @@ export default function ThemeProvider() {
           if (theme.footerTextColor)
             root.style.setProperty("--footer-text", theme.footerTextColor);
 
+          if (theme.navbarBgColor)
+            root.style.setProperty("--navbar-bg", theme.navbarBgColor);
+          if (theme.navbarTextColor)
+            root.style.setProperty("--navbar-text", theme.navbarTextColor);
+
           document.body.style.color = theme.textColor || "#000000";
         }
       } catch (error) {

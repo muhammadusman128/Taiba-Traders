@@ -6,14 +6,17 @@ import axios from "axios";
 import HeroSlider from "@/components/HeroSlider";
 import { FiChevronLeft, FiChevronRight, FiArrowRight } from "react-icons/fi";
 import Link from "next/link";
+import { Dancing_Script } from "next/font/google";
+
+const dancing = Dancing_Script({ subsets: ["latin"], weight: ["700"] });
 
 const SimpleHeading = ({ title }: { title: string }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full mb-2">
-      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 capitalize text-center">
+      <h2 className={`text-3xl sm:text-4xl font-bold text-gray-900 capitalize text-center ${dancing.className}`}>
         {title}
       </h2>
-      <div className="w-16 h-1 bg-gray-900 mt-3 rounded-full"></div>
+      <div className="w-12 h-[2px] bg-gray-900 mt-2 rounded-full" />
     </div>
   );
 };
@@ -71,54 +74,17 @@ const CategorySlider = ({
       {/* Products Carousel */}
       <div className="-mx-4 px-4 sm:mx-0 sm:px-0">
         {isLoading ? (
-          <div
-            ref={scrollContainerRef}
-            className="flex overflow-x-auto snap-x snap-mandatory gap-4 sm:gap-6 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
             {skeletons.map((_, idx) => (
-              <div
-                key={idx}
-                className="animate-pulse space-y-3 min-w-60 w-[65vw] sm:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] shrink-0 snap-start"
-              >
-                <div className="aspect-4/5 bg-gray-200 rounded-lg" />
-                <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto" />
-                <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto" />
+              <div key={idx} className="animate-pulse">
+                <div className="aspect-[4/3] bg-gray-200 rounded-xl" />
               </div>
             ))}
           </div>
         ) : products.length > 0 ? (
-          <div
-            ref={scrollContainerRef}
-            className="flex overflow-x-auto snap-x snap-mandatory gap-4 sm:gap-6 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth cursor-grab active:cursor-grabbing"
-            onPointerDown={(e) => {
-              const slider = scrollContainerRef.current;
-              if (!slider) return;
-
-              let startX = e.pageX - slider.offsetLeft;
-              let scrollLeft = slider.scrollLeft;
-
-              const handlePointerMove = (e: PointerEvent) => {
-                const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 2; // scroll-fast
-                slider.scrollLeft = scrollLeft - walk;
-              };
-
-              const handlePointerUp = () => {
-                window.removeEventListener("pointermove", handlePointerMove);
-                window.removeEventListener("pointerup", handlePointerUp);
-              };
-
-              window.addEventListener("pointermove", handlePointerMove);
-              window.addEventListener("pointerup", handlePointerUp);
-            }}
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
             {products.map((product: any) => (
-              <div
-                key={product._id}
-                className="min-w-60 w-[65vw] sm:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] shrink-0 snap-start"
-              >
-                <ProductCard product={product} />
-              </div>
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         ) : (

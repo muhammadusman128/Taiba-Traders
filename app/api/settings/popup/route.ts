@@ -4,6 +4,8 @@ import Setting from "@/models/Setting";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectDB();
@@ -48,3 +50,4 @@ export async function PUT(req: Request) {
     );
   }
 }
+

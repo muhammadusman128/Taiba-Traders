@@ -5,6 +5,8 @@ import connectDB from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
 import Message from "@/models/Message";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -61,3 +63,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

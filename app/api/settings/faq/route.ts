@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Setting from "@/models/Setting";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await dbConnect();
@@ -32,3 +34,4 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
+

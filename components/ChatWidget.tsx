@@ -93,6 +93,22 @@ export default function ChatWidget() {
     };
   }, [session]);
 
+  // Handle re-joining room when conversation changes or socket reconnects
+  useEffect(() => {
+    if (socket && conversation?._id) {
+      socket.emit("join-chat", conversation._id);
+
+      const onConnect = () => {
+        socket.emit("join-chat", conversation._id);
+      };
+
+      socket.on("connect", onConnect);
+      return () => {
+        socket.off("connect", onConnect);
+      };
+    }
+  }, [socket, conversation?._id]);
+
   // Load old messages & get conversation ID
   useEffect(() => {
     if (socket && (session?.user || guestId)) {
@@ -119,6 +135,10 @@ export default function ChatWidget() {
   // Add listeners
   useEffect(() => {
     if (!socket) return;
+
+    // Cleanup prior event listeners to avoid stale values on re-renders
+    socket.off("new-message");
+    socket.off("message-deleted");
 
     socket.on("new-message", (msg: any) => {
       setMessages((prev) => {
@@ -163,6 +183,7 @@ export default function ChatWidget() {
       );
 
       const messageObj = res.data.message;
+      const isNewConversation = res.data.isNewConversation;
 
       // Update local state instantly map ->
       setMessages((prev) => [...prev, messageObj]);
@@ -172,6 +193,10 @@ export default function ChatWidget() {
         ...messageObj,
         conversationId: conversation?._id,
       });
+
+      if (isNewConversation) {
+        socket?.emit("new-conversation-created");
+      }
 
       setNewMessage("");
       setImageUrl("");
@@ -268,14 +293,16 @@ export default function ChatWidget() {
               {messages.map((msg) => (
                 <div
                   key={msg._id}
-                  className={`flex flex-col ${msg.senderModel === "User" ? "items-end" : "items-start"
-                    }`}
+                  className={`flex flex-col ${
+                    msg.senderModel === "User" ? "items-end" : "items-start"
+                  }`}
                 >
                   <div
-                    className={`relative p-3 max-w-[80%] ${msg.senderModel === "User"
-                      ? "bg-gray-100/80 text-gray-900 rounded-2xl rounded-tr-sm"
-                      : "bg-[var(--primary-color,#000)] text-white rounded-2xl rounded-tl-sm"
-                      } group`}
+                    className={`relative p-3 max-w-[80%] ${
+                      msg.senderModel === "User"
+                        ? "bg-gray-100/80 text-gray-900 rounded-2xl rounded-tr-sm"
+                        : "bg-[var(--primary-color,#000)] text-white rounded-2xl rounded-tl-sm"
+                    } group`}
                   >
                     {msg.senderModel === "User" && (
                       <button

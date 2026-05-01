@@ -40,6 +40,10 @@ const ioHandler = (req: NextApiRequest, res: any) => {
         io.to("admin-room").emit("admin-new-message", content);
       });
 
+      socket.on("new-conversation-created", () => {
+        io.to("admin-room").emit("admin-new-conversation");
+      });
+
       // Delete message real-time trigger
       socket.on(
         "delete-message",

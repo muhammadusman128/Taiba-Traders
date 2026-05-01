@@ -86,6 +86,12 @@ export default function AdminChatPage() {
   useEffect(() => {
     if (!socket) return;
 
+    // Clean up previous event listeners so we don't have duplicates with stale state
+    socket.off("new-message");
+    socket.off("admin-new-message");
+    socket.off("admin-new-conversation");
+    socket.off("message-deleted");
+
     socket.on("new-message", (msg: any) => {
       // Only push to active chat screen if it matches the current conversation.
       if (activeChat && msg.conversationId === activeChat._id) {
@@ -102,7 +108,7 @@ export default function AdminChatPage() {
       if (!activeChat || activeChat._id !== msg.conversationId) {
         toast.custom(
           (t) => (
-            <div className="bg-white border text-sm border-zinc-200 p-4 rounded flex gap-4 w-72">
+            <div className="bg-white border text-sm border-zinc-200 p-4 rounded flex gap-4 w-72 shadow-lg">
               <div className="flex-1">
                 <h3 className="font-bold text-sm text-gray-800">New Message</h3>
                 <p className="text-xs text-gray-600 truncate">
@@ -124,7 +130,19 @@ export default function AdminChatPage() {
           ...prev,
           [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
         }));
+      } else {
+        // We are currently viewing this chat, so append the new message immediately
+        setMessages((prev) => {
+          if (prev.find((m) => m._id === msg._id)) return prev;
+          return [...prev, msg];
+        });
       }
+
+      // Update sidebar
+      fetchConversations();
+    });
+
+    socket.on("admin-new-conversation", () => {
       fetchConversations();
     });
 
@@ -158,7 +176,10 @@ export default function AdminChatPage() {
       const messageObj = res.data.message;
       setMessages((prev) => [...prev, messageObj]);
 
-      socket?.emit("send-message", messageObj);
+      socket?.emit("send-message", {
+        ...messageObj,
+        conversationId: activeChat._id,
+      });
 
       setNewMessage("");
       setImageUrl("");

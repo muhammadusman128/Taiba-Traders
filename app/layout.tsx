@@ -119,11 +119,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   let themeData = null;
+  let siteSettings = null;
+
   try {
     await connectDB();
-    const settings = await Setting.findOne({ key: "theme_colors" });
-    if (settings) {
-      themeData = settings.value;
+    const [themeDoc, siteDoc] = await Promise.all([
+      Setting.findOne({ key: "theme_colors" }),
+      Setting.findOne({ key: "site" }),
+    ]);
+    if (themeDoc) {
+      themeData = themeDoc.value;
+    }
+    if (siteDoc) {
+      siteSettings = siteDoc.value;
     }
   } catch (error) {
     console.error("Failed to load layout theme", error);
@@ -138,6 +146,9 @@ export default async function RootLayout({
   const footerBgColor = themeData?.footerBgColor || "#ffffff";
   const footerTextColor = themeData?.footerTextColor || "#374151";
 
+  const siteLogo = siteSettings?.logo || "/logomain.png";
+  const siteFavicon = siteSettings?.favicon || "/logo.png";
+
   return (
     <html lang="en">
       <head>
@@ -147,12 +158,15 @@ export default async function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: companyFullName,
+              name: siteSettings?.siteName || companyFullName,
               url: siteUrl,
-              logo: logoUrl,
+              logo: siteLogo,
             }),
           }}
         />
+        <link rel="icon" href={siteFavicon} />
+        <link rel="apple-touch-icon" href={siteFavicon} />
+        <link rel="shortcut icon" href={siteFavicon} />
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -182,7 +196,7 @@ export default async function RootLayout({
           <VisitorTracker />
 
           <div className="flex flex-col min-h-screen">
-            <Navbar />
+            <Navbar initialLogo={siteLogo} />
             <main className="grow">{children}</main>
             <ConditionalFooterAndSlider />
           </div>

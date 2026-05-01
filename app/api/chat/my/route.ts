@@ -68,10 +68,12 @@ export async function POST(req: NextRequest) {
     const senderId = userId || guestId;
 
     let conversation;
+    let isNewConversation = false;
     if (userId) {
       conversation = await Conversation.findOne({ user: userId });
       if (!conversation) {
         conversation = await Conversation.create({ user: userId });
+        isNewConversation = true;
       }
     } else {
       conversation = await Conversation.findOne({ guestId: guestId as string });
@@ -79,6 +81,7 @@ export async function POST(req: NextRequest) {
         conversation = await Conversation.create({
           guestId: guestId as string,
         });
+        isNewConversation = true;
       }
     }
 
@@ -94,7 +97,7 @@ export async function POST(req: NextRequest) {
     conversation.lastMessageTime = new Date();
     await conversation.save();
 
-    return NextResponse.json({ message });
+    return NextResponse.json({ message, isNewConversation });
   } catch (error: any) {
     return NextResponse.json(
       {

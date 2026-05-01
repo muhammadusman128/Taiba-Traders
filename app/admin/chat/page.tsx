@@ -10,6 +10,7 @@ import {
   FiArrowLeft,
   FiX,
   FiBell,
+  FiRefreshCw,
 } from "react-icons/fi";
 import { io as ClientIO } from "socket.io-client";
 import LocalImageUpload from "@/components/LocalImageUpload";
@@ -81,7 +82,21 @@ export default function AdminChatPage() {
     }
   };
 
-  // Auto-refresh interval removed as requested, relying purely on sockets.
+  // Auto-refresh interval
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConversations();
+      if (activeChat) {
+        axios
+          .get(`/api/chat/admin/messages?id=${activeChat._id}`)
+          .then((res) => {
+            setMessages(res.data.messages || []);
+          })
+          .catch(console.error);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [activeChat]);
 
   useEffect(() => {
     if (!socket) return;
@@ -229,8 +244,15 @@ export default function AdminChatPage() {
       <div
         className={`${activeChat ? "hidden md:block" : "block"} w-full md:w-1/4 lg:w-1/5 bg-transparent border-r border-gray-100 overflow-y-auto`}
       >
-        <div className="p-5 font-light tracking-widest text-xs uppercase text-gray-400 border-b border-gray-100">
-          User Chats
+        <div className="p-5 font-light tracking-widest text-xs uppercase text-gray-400 border-b border-gray-100 flex justify-between items-center">
+          <span>User Chats</span>
+          <button
+            onClick={fetchConversations}
+            title="Refresh Chats"
+            className="text-gray-400 hover:text-black transition-colors cursor-pointer"
+          >
+            <FiRefreshCw size={14} />
+          </button>
         </div>
         {conversations.map((c) => (
           <div
@@ -298,6 +320,13 @@ export default function AdminChatPage() {
                     ? activeChat.guestName || "Guest"
                     : activeChat.user?.name || "Customer"}
                 </span>
+                <button
+                  onClick={() => loadChat(activeChat)}
+                  title="Refresh Messages"
+                  className="text-gray-400 hover:text-black transition-colors cursor-pointer"
+                >
+                  <FiRefreshCw size={14} />
+                </button>
               </div>
               <button
                 onClick={deleteConversation}

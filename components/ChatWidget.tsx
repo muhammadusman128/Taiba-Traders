@@ -8,6 +8,7 @@ import {
   FiSend,
   FiImage,
   FiTrash2,
+  FiRefreshCw,
 } from "react-icons/fi";
 import axios from "axios";
 import { io as ClientIO } from "socket.io-client";
@@ -109,19 +110,35 @@ export default function ChatWidget() {
     }
   }, [socket, conversation?._id]);
 
-  // Load old messages & get conversation ID
-  useEffect(() => {
-    if (socket && (session?.user || guestId)) {
+  const fetchMessages = () => {
+    if (session?.user || guestId) {
       axios
         .get("/api/chat/my", { headers: getHeaders() })
         .then((res) => {
           setMessages(res.data.messages || []);
-          setConversation(res.data.conversation);
-          socket.emit("join-chat", res.data.conversation._id);
+          if (!conversation && res.data.conversation) {
+            setConversation(res.data.conversation);
+            socket?.emit("join-chat", res.data.conversation._id);
+          }
         })
         .catch(console.error);
     }
+  };
+
+  // Load old messages & get conversation ID
+  useEffect(() => {
+    if (socket && (session?.user || guestId)) {
+      fetchMessages();
+    }
   }, [session, socket, guestId]);
+
+  // Polling for new messages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchMessages();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [session, guestId, conversation, socket]);
 
   // Read status & bounce icon
   const [unreadCount, setUnreadCount] = useState(0);
@@ -244,13 +261,22 @@ export default function ChatWidget() {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 text-gray-400 hover:text-gray-900 rounded-full cursor-pointer hover:bg-gray-100 transition-colors"
-                title="Close chat"
-              >
-                <FiX size={18} />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={fetchMessages}
+                  className="p-2 text-gray-400 hover:text-gray-900 rounded-full cursor-pointer hover:bg-gray-100 transition-colors"
+                  title="Refresh chat"
+                >
+                  <FiRefreshCw size={16} />
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-900 rounded-full cursor-pointer hover:bg-gray-100 transition-colors"
+                  title="Close chat"
+                >
+                  <FiX size={18} />
+                </button>
+              </div>
             </div>
 
             {/* WhatsApp Banner */}

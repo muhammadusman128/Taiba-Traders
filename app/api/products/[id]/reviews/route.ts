@@ -39,7 +39,7 @@ export async function POST(
       product.reviews = [];
     }
 
-    product.reviews.push(review);
+    product.reviews.push(review as any);
     product.numReviews = product.reviews.length;
     product.ratings =
       product.reviews.reduce((acc, item) => item.rating + acc, 0) /

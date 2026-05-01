@@ -93,6 +93,11 @@ const ProductSchema: Schema = new Schema(
   },
 );
 
+// Clear mongoose models cache in development to ensure schema updates take effect
+if (process.env.NODE_ENV !== "production") {
+  delete mongoose.models.Product;
+}
+
 const Product: Model<IProduct> =
   mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
 

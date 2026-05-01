@@ -4,12 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import {
   FiShoppingCart,
   FiMinus,
   FiPlus,
   FiShare2,
   FiTruck,
+  FiStar,
+  FiTrash2,
 } from "react-icons/fi";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
@@ -54,6 +57,14 @@ export default function ProductClient({ productId }: ProductClientProps) {
   const [sharePopup, setSharePopup] = useState<string | null>(null);
   const shareTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const addItem = useCartStore((state) => state.addItem);
+  
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "admin";
+
+  const [reviewName, setReviewName] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   useEffect(() => {
     fetchProduct();
@@ -120,6 +131,44 @@ export default function ProductClient({ productId }: ProductClientProps) {
     }
     setSharePopup(url);
     shareTimeoutRef.current = setTimeout(() => setSharePopup(null), 2000);
+  };
+
+  const submitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewName || !reviewComment || reviewRating < 1 || reviewRating > 5) {
+      toast.error("Please provide a valid name, rating, and comment.");
+      return;
+    }
+    setIsSubmittingReview(true);
+    try {
+      const res = await axios.post(`/api/products/${productId}/reviews`, {
+        name: reviewName,
+        rating: reviewRating,
+        comment: reviewComment,
+      });
+      toast.success("Review submitted successfully!");
+      setProduct(res.data.product);
+      setReviewName("");
+      setReviewComment("");
+      setReviewRating(5);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to submit review");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
+  const deleteReview = async (reviewId: string) => {
+    if (!confirm("Are you sure you want to delete this review?")) return;
+    try {
+      const res = await axios.delete(
+        `/api/products/${productId}/reviews?reviewId=${reviewId}`
+      );
+      toast.success("Review deleted");
+      setProduct(res.data.product);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to delete review");
+    }
   };
 
   useEffect(() => {
@@ -299,6 +348,113 @@ export default function ProductClient({ productId }: ProductClientProps) {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Customer Reviews Section */}
+        <div className="mt-20 pt-12 border-t border-gray-100 max-w-4xl mx-auto">
+          <h2 className="text-2xl font-light tracking-tight text-gray-900 mb-8">
+            Customer Reviews
+            <span className="ml-3 text-sm text-gray-400 font-medium">({product.reviews?.length || 0})</span>
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+            <div className="md:col-span-5 order-2 md:order-1">
+              <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                <h3 className="text-sm uppercase tracking-widest font-semibold text-gray-900 mb-6">Write a Review</h3>
+                <form onSubmit={submitReview} className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-semibold mb-2">Rating</label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setReviewRating(star)}
+                          className={`focus:outline-none transition-colors cursor-pointer ${
+                            star <= reviewRating ? "text-yellow-400" : "text-gray-200"
+                          }`}
+                        >
+                          <FiStar size={24} fill={star <= reviewRating ? "currentColor" : "none"} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-semibold mb-2">Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={reviewName}
+                      onChange={(e) => setReviewName(e.target.value)}
+                      className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-black bg-white transition-colors"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-semibold mb-2">Review</label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-black bg-white transition-colors resize-none"
+                      placeholder="Share your thoughts about this product..."
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingReview}
+                    className="w-full bg-black text-white px-6 py-3.5 rounded-xl text-[10px] uppercase tracking-widest font-semibold hover:bg-gray-900 transition-colors disabled:opacity-50"
+                  >
+                    {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div className="md:col-span-7 order-1 md:order-2">
+              <div className="space-y-6">
+                {!product.reviews || product.reviews.length === 0 ? (
+                  <div className="text-center py-12 px-4 bg-gray-50/30 rounded-2xl border border-gray-100 border-dashed">
+                    <p className="text-gray-500 font-light">No reviews yet. Be the first to share your experience!</p>
+                  </div>
+                ) : (
+                  product.reviews.map((review: any) => (
+                    <div key={review._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative group transition-all hover:shadow-md">
+                      {isAdmin && (
+                        <button
+                          onClick={() => deleteReview(review._id)}
+                          className="absolute top-6 right-6 text-gray-300 hover:text-red-500 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                          title="Delete Review (Admin)"
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      )}
+                      <div className="flex items-center gap-1 mb-3">
+                        {[...Array(5)].map((_, i) => (
+                          <FiStar
+                            key={i}
+                            size={14}
+                            className={i < review.rating ? "text-yellow-400" : "text-gray-200"}
+                            fill={i < review.rating ? "currentColor" : "none"}
+                          />
+                        ))}
+                      </div>
+                      <h4 className="font-semibold text-gray-900 text-sm mb-1">{review.name}</h4>
+                      <p className="text-xs text-gray-400 font-light mb-3">
+                        {new Date(review.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                      <p className="text-gray-600 font-light text-sm leading-relaxed whitespace-pre-wrap">{review.comment}</p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

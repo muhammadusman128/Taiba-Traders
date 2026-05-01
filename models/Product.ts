@@ -1,6 +1,13 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import "./Category";
 
+export interface IReview extends Document {
+  name: string;
+  rating: number;
+  comment: string;
+  createdAt: Date;
+}
+
 export interface IProduct extends Document {
   name: string;
   slug: string;
@@ -11,10 +18,21 @@ export interface IProduct extends Document {
   images: string[];
   brand?: string;
   ratings: number;
+  numReviews: number;
+  reviews: IReview[];
   isFeatured: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
+
+const ReviewSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+    comment: { type: String, required: true },
+  },
+  { timestamps: true }
+);
 
 const ProductSchema: Schema = new Schema(
   {
@@ -60,6 +78,11 @@ const ProductSchema: Schema = new Schema(
       min: 0,
       max: 5,
     },
+    numReviews: {
+      type: Number,
+      default: 0,
+    },
+    reviews: [ReviewSchema],
     isFeatured: {
       type: Boolean,
       default: false,

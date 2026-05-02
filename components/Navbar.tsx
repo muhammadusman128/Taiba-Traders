@@ -138,11 +138,11 @@ export default function Navbar({ initialLogo = "/logomain.png" }: NavbarProps) {
                   <Image
                     src={siteLogo}
                     alt="Taiba Traders"
-                    width={90}
-                    height={48}
+                    width={140}
+                    height={60}
                     priority
-                    sizes="90px"
-                    style={{ height: "auto", width: "auto" }}
+                    sizes="140px"
+                    style={{ height: "auto", width: "auto", maxHeight: "60px" }}
                   />
                 </Link>
 

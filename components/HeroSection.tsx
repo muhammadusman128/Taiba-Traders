@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import { Playfair_Display, Inter, Dancing_Script } from "next/font/google";
+import { Roboto } from "next/font/google";
 
-const playfair = Playfair_Display({ subsets: ["latin"], weight: ["700", "800", "900"] });
-const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600"] });
-const dancing = Dancing_Script({ subsets: ["latin"], weight: ["700"] });
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700", "900"],
+  subsets: ["latin"],
+});
 
 interface HeroData {
   preHeadline: string;
@@ -61,7 +62,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className={`w-full relative overflow-hidden rounded-3xl ${inter.className}`}
+      className={`w-full relative overflow-hidden rounded-3xl ${roboto.className}`}
       style={{
         background: isFullBg ? undefined : bg,
         minHeight: "480px",
@@ -72,10 +73,17 @@ export default function HeroSection() {
       {/* Full BG Image */}
       {isFullBg && hero.image && (
         <>
-          <img src={hero.image} alt={hero.headline || "Hero"}
-            className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ backgroundColor: `rgba(0,0,0,${(hero.overlayOpacity ?? 40) / 100})` }} />
+          <img
+            src={hero.image}
+            alt={hero.headline || "Hero"}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundColor: `rgba(0,0,0,${(hero.overlayOpacity ?? 40) / 100})`,
+            }}
+          />
         </>
       )}
 
@@ -90,10 +98,14 @@ export default function HeroSection() {
       />
 
       {/* Glow blobs */}
-      <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full pointer-events-none"
-        style={{ background: `${accent}18`, filter: "blur(80px)" }} />
-      <div className="absolute -bottom-20 right-10 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: `${hero.bgColor}30`, filter: "blur(100px)" }} />
+      <div
+        className="absolute -top-20 -left-20 w-80 h-80 rounded-full pointer-events-none"
+        style={{ background: `${accent}18`, filter: "blur(80px)" }}
+      />
+      <div
+        className="absolute -bottom-20 right-10 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background: `${hero.bgColor}30`, filter: "blur(100px)" }}
+      />
 
       {/* Main Layout */}
       <div
@@ -115,7 +127,7 @@ export default function HeroSection() {
           {hero.preHeadline && (
             <div className="inline-block relative pb-1">
               <span
-                className={`text-2xl sm:text-3xl italic ${dancing.className}`}
+                className={`text-2xl sm:text-3xl italic ${roboto.className}`}
                 style={{
                   color: accent,
                   textShadow: `0 0 24px ${accent}66`,
@@ -126,7 +138,9 @@ export default function HeroSection() {
               </span>
               <span
                 className="absolute -bottom-0.5 left-0 w-3/4 h-[2px] rounded-full"
-                style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+                style={{
+                  background: `linear-gradient(90deg, ${accent}, transparent)`,
+                }}
               />
             </div>
           )}
@@ -134,7 +148,7 @@ export default function HeroSection() {
           {/* Main Headline */}
           {hero.headline && (
             <h1
-              className={`text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] ${dancing.className}`}
+              className={`text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] ${roboto.className}`}
               style={{ color: hero.textColor }}
             >
               {hero.headline}
@@ -175,28 +189,37 @@ export default function HeroSection() {
                 {hero.secondButtonText}
                 <span
                   className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                  style={{ backgroundColor: `${hero.textColor}20`, border: `1.5px solid ${hero.textColor}40` }}
+                  style={{
+                    backgroundColor: `${hero.textColor}20`,
+                    border: `1.5px solid ${hero.textColor}40`,
+                  }}
                 >
                   →
                 </span>
               </Link>
             )}
           </div>
-
         </div>
 
         {/* ── Side Image ── */}
         {!isFullBg && !isCentered && hero.image && (
           <div
             className={`shrink-0 transition-all duration-700 ease-out delay-200 ${
-              visible ? "opacity-100 translate-x-0 scale-100" : "opacity-0 translate-x-12 scale-95"
+              visible
+                ? "opacity-100 translate-x-0 scale-100"
+                : "opacity-0 translate-x-12 scale-95"
             }`}
           >
             <img
               src={hero.image}
               alt={hero.headline || "Hero"}
               className="object-contain drop-shadow-2xl"
-              style={{ maxWidth: "440px", maxHeight: "400px", width: "auto", height: "auto" }}
+              style={{
+                maxWidth: "440px",
+                maxHeight: "400px",
+                width: "auto",
+                height: "auto",
+              }}
             />
           </div>
         )}

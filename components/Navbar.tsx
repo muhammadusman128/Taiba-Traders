@@ -150,6 +150,13 @@ export default function Navbar({ initialLogo = "/logomain.png" }: NavbarProps) {
                 <div className="hidden md:flex items-center gap-5 flex-wrap">
                   {flatCategories.length > 0 && (
                     <>
+                      <Link
+                        href="/"
+                        className="group relative text-[11px] md:text-[12px] uppercase font-medium text-[var(--navbar-text)] hover:opacity-80 tracking-widest whitespace-nowrap transition-colors duration-300"
+                      >
+                        Home
+                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[var(--navbar-text)] transition-all duration-300 group-hover:w-full"></span>
+                      </Link>
                       {flatCategories.map((cat) => (
                         <Link
                           key={cat._id}
@@ -397,6 +404,14 @@ export default function Navbar({ initialLogo = "/logomain.png" }: NavbarProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <Link
+            href="/"
+            className="block py-2 text-gray-700 hover:text-gray-900 border-b border-gray-50"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Home
+          </Link>
+
           <Link
             href="/products"
             className="block py-2 text-gray-700 hover:text-gray-900 border-b border-gray-50"

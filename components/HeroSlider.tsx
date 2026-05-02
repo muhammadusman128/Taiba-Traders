@@ -82,7 +82,7 @@ export default function HeroSlider({
   }
 
   return (
-    <section className="relative w-full">
+    <section className={`relative w-full ${roboto.className}`}>
       <Swiper
         modules={[Autoplay, Pagination]}
         autoplay={{

@@ -84,10 +84,11 @@ export default function SignInPage() {
 
           {statusMessage && (
             <div
-              className={`mb-4 text-sm text-center ${statusMessage.type === "error"
+              className={`mb-4 text-sm text-center ${
+                statusMessage.type === "error"
                   ? "text-red-600"
                   : "text-green-600"
-                }`}
+              }`}
             >
               {statusMessage.text}
             </div>
@@ -115,12 +116,20 @@ export default function SignInPage() {
             </div>
 
             <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
+              <div className="flex justify-between">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Password
+                </label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm font-medium text-black hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <input
                   id="password"

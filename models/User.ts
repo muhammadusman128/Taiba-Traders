@@ -19,6 +19,8 @@ export interface IUser extends Document {
   lastIp?: string;
   lastDevice?: string;
   sessionVersion?: number;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -80,6 +82,14 @@ const UserSchema: Schema = new Schema(
     sessionVersion: {
       type: Number,
       default: 1,
+    },
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
     },
   },
   {

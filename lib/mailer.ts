@@ -14,21 +14,21 @@ async function getSiteSettings() {
         "https://res.cloudinary.com/dz8pr6lnt/image/upload/v1770379199/logomain_arywhj.png",
       brandName: footerSettings?.value?.brandName || "Taiba Traders",
       contactEmail:
-        footerSettings?.value?.contact?.email || "info@ujavenue.store",
+        footerSettings?.value?.contact?.email || "info@taibatraders.shop",
       contactPhone: footerSettings?.value?.contact?.phone || "+92 336 8249118",
     };
   } catch (error) {
     return {
       logo: "https://res.cloudinary.com/dz8pr6lnt/image/upload/v1770379199/logomain_arywhj.png",
       brandName: "Taiba Traders",
-      contactEmail: "info@ujavenue.store",
+      contactEmail: "info@taibatraders.shop",
       contactPhone: "+92 336 8249118",
     };
   }
 }
 
-const GMAIL_USER = "ujavenue@gmail.com";
-const FROM_ADDRESS = "<no-reply@ujavenue.store>";
+const GMAIL_USER = process.env.EMAIL_USER || "taibatraders2000@gmail.com";
+const FROM_ADDRESS = "<no-reply@taibatraders.shop>";
 
 function getAppPassword(): string {
   const password = process.env.APP_PASSWORD;
@@ -148,6 +148,30 @@ export async function buildWelcomeEmail(name: string) {
   const html = await wrapTemplate({
     preheader: `Welcome to ${siteConfig.brandName}`,
     title: `Welcome to ${siteConfig.brandName}`,
+    body,
+  });
+
+  return { subject, html };
+}
+
+export async function buildPasswordResetEmail(name: string, resetLink: string) {
+  const subject = "Reset your Password";
+  const siteConfig = await getSiteSettings();
+  const safeName = name?.trim() || "there";
+
+  const body = `
+    <p style="margin: 0 0 16px 0; font-size: 16px;">Hi ${safeName},</p>
+    <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6;">We received a request to reset the password for your ${siteConfig.brandName} account.</p>
+    <p style="margin: 0 0 16px 0; text-align: center;">
+      <a href="${resetLink}" style="display: inline-block; padding: 12px 24px; background-color: #000000; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px; margin-top: 10px;">Reset Password</a>
+    </p>
+    <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6; color: #555;">If the button above does not work, paste this link into your browser:<br/><a href="${resetLink}" style="color: #0000ff; text-decoration: underline;">${resetLink}</a></p>
+    <p style="margin: 0; font-size: 16px; line-height: 1.6;">If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
+  `;
+
+  const html = await wrapTemplate({
+    preheader: "Reset your password",
+    title: "Reset Your Password",
     body,
   });
 

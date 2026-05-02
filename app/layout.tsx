@@ -9,6 +9,7 @@ import CartDrawer from "@/components/CartDrawer";
 import ChatWidget from "@/components/ChatWidget";
 import SitePopup from "@/components/SitePopup";
 import VisitorTracker from "@/components/VisitorTracker";
+import { Toaster } from "sonner";
 import connectDB from "@/lib/mongodb";
 import Setting from "@/models/Setting";
 
@@ -189,6 +190,7 @@ export default async function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
+          <Toaster richColors position="top-center" />
           <ThemeProvider />
           <CartDrawer />
           <ChatWidget />

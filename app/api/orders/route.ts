@@ -45,8 +45,8 @@ const validateOrderPayload = (
   const address = sanitizeTrim(shippingAddress?.address);
   const phone = sanitizeTrim(shippingAddress?.phone);
 
-  if (!fullName || !/^[A-Za-z\s]{3,60}$/.test(fullName)) {
-    return "Full name must be letters/spaces (3-60 chars)";
+  if (!fullName || fullName.length < 3 || fullName.length > 60) {
+    return "Full name must be between 3-60 chars";
   }
 
   if (!address || address.length < 8) {
@@ -60,7 +60,7 @@ const validateOrderPayload = (
 
   if (paymentMethod === "Prepaid") {
     const reference = sanitizeTrim(paymentReference);
-    if (!/^[A-Za-z0-9-]{8,25}$/.test(reference)) {
+    if (!/^[A-Za-z0-9-]{5,35}$/.test(reference)) {
       return "Enter a valid transaction ID";
     }
 
@@ -256,28 +256,26 @@ export async function POST(req: NextRequest) {
       paymentProofUrl,
     });
 
-    // Do not await the email to make checkout faster
-    Promise.resolve(
-      buildOrderEmail({
+    // Do not try to skip awaiting to ensure serverless platforms complete the async operation
+    try {
+      const orderEmail = await buildOrderEmail({
         customerName: shippingAddress?.fullName || session?.user?.name,
         orderId: order._id.toString(),
         orderItems,
         totalPrice,
         shippingAddress,
         paymentMethod,
-      }),
-    )
-      .then((orderEmail: any) => {
-        return sendEmail({
-          to: recipientEmail,
-          subject: orderEmail.subject,
-          html: orderEmail.html,
-          attachments: orderEmail.attachments,
-        });
-      })
-      .catch((emailError: any) => {
-        console.error("Order email error:", emailError);
       });
+
+      await sendEmail({
+        to: recipientEmail,
+        subject: orderEmail.subject,
+        html: orderEmail.html,
+        attachments: orderEmail.attachments,
+      });
+    } catch (emailError: any) {
+      console.error("Order email error:", emailError);
+    }
 
     const plainOrder = order.toObject ? order.toObject() : order;
 

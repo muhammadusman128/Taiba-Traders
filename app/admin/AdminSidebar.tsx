@@ -194,7 +194,7 @@ export default function Sidebar() {
             alt="Logo"
             className="w-8 h-8 rounded-full border border-zinc-200 p-0.5"
           />
-          <span className="font-bold tracking-wider text-sm">UJ ADMIN</span>
+          <span className="font-bold tracking-wider text-sm">TaibaADMIN</span>
         </Link>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
